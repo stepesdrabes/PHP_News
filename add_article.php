@@ -1,21 +1,54 @@
 <?php
 
+use JetBrains\PhpStorm\NoReturn;
+
 include_once 'database/ArticleRepository.php';
 include_once 'database/CategoryRepository.php';
+include_once 'services/SuccessMessageService.php';
 include_once 'services/AuthService.php';
 AuthService::init();
 
 $error_message = null;
 
-$article_title = null;
-$content = null;
-$category = null;
+$article_title = $_SESSION['article_draft_title'] ?? null;
+$content = $_SESSION['article_draft_content'] ?? null;
+$category = $_SESSION['article_draft_category'] ?? null;
+
+$draft = $article_title != null || $content != null || $category != null;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    validate_values();
+    $button = $_POST['button'] ?? 1;
+
+    if ($button == 1) {
+        validate_values();
+    } else {
+        save_values();
+    }
 }
 
-function validate_values()
+#[NoReturn] function save_values()
+{
+    $article_title = $_POST['title'] ?? null;
+    $content = $_POST['content'] ?? null;
+    $category = $_POST['category'] ?? null;
+
+    $_SESSION['article_draft_title'] = $article_title;
+    $_SESSION['article_draft_content'] = $content;
+    $_SESSION['article_draft_category'] = $category;
+
+    SuccessMessageService::create_popup_message(
+        'fi-br-check',
+        'Úspěch',
+        'Rozepsaný článek byl úspěšně uložen',
+        '#55d066',
+        '#226329'
+    );
+
+    header('location: index.php');
+    exit;
+}
+
+#[NoReturn] function validate_values()
 {
     global $error_message;
     global $article_title;
@@ -43,12 +76,24 @@ function validate_values()
         return;
     }
 
-    $article_id = ArticleRepository::create_article($user_id, $category, $category, $article_title, $content);
+    $article_id = ArticleRepository::create_article($user_id, $category, $article_title, $content);
 
     if ($article_id == null) {
         $error_message = "Nastala chyba při vytváření článku";
         return;
     }
+
+    SuccessMessageService::create_popup_message(
+        'fi-br-check',
+        'Úspěch',
+        'Článek byl úspěšně vytvořen',
+        '#55d066',
+        '#226329'
+    );
+
+    unset($_SESSION['article_draft_title']);
+    unset($_SESSION['article_draft_content']);
+    unset($_SESSION['article_draft_category']);
 
     header('location: article.php?id=' . $article_id);
     exit;
@@ -97,25 +142,26 @@ $categories = CategoryRepository::get_categories();
         </p>
     <?php else: ?>
         <form id="add-article-form" method="post">
-            <input type="text" class="input-field" name="title" placeholder="Nadpis článku"<?= $article_title != null ? ' value="' . $article_title . '"' : '' ?>>
+            <input type="text" class="input-field" name="title"
+                   placeholder="Nadpis článku"<?= $article_title != null ? ' value="' . $article_title . '"' : '' ?>>
 
             <select class="input-field" name="category">
-                <option>Vyberte kategorii...</option>
+                <option value="">Vyberte kategorii...</option>
                 <?php foreach ($categories as $category): ?>
                     <option value="<?= $category['id'] ?>"><?= $category['name'] ?></option>
                 <?php endforeach; ?>
             </select>
 
-            <textarea style="min-height: 600px" id="article-content"
-                      name="content"><?= $content == null ? 'Tohle je text vašeho zbrusu nového článku!' : $content ?></textarea>
-
             <?php if ($error_message != null): ?>
                 <p class="error-message"><?= $error_message ?></p>
             <?php endif; ?>
 
+            <textarea style="min-height: 600px" id="article-content"
+                      name="content"><?= $content == null ? 'Tohle je text vašeho zbrusu nového článku!' : $content ?></textarea>
+
             <div style="display: flex; justify-content: space-between">
-                <button style="width: 160px">Uložit rozepsaný</button>
-                <button style="width: 160px">Přidat článek</button>
+                <button name="button" style="width: 160px" value="0">Uložit rozepsaný</button>
+                <button name="button" style="width: 160px" value="1">Přidat článek</button>
             </div>
         </form>
     <?php endif; ?>
