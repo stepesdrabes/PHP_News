@@ -1,12 +1,16 @@
+<!doctype html>
+
 <?php
 
 use JetBrains\PhpStorm\NoReturn;
 
+include_once 'App.php';
+App::init();
+
 include_once 'database/ArticleRepository.php';
 include_once 'database/CategoryRepository.php';
-include_once 'services/SuccessMessageService.php';
+include_once 'services/StatusMessageService.php';
 include_once 'services/AuthService.php';
-AuthService::init();
 
 $error_message = null;
 
@@ -36,13 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['article_draft_content'] = $content;
     $_SESSION['article_draft_category'] = $category;
 
-    SuccessMessageService::create_popup_message(
-        'fi-br-check',
-        'Úspěch',
-        'Rozepsaný článek byl úspěšně uložen',
-        '#55d066',
-        '#226329'
-    );
+    StatusMessageService::create_success_popup('Rozepsaný článek byl úspěšně uložen');
 
     header('location: index.php');
     exit;
@@ -83,40 +81,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         return;
     }
 
-    SuccessMessageService::create_popup_message(
-        'fi-br-check',
-        'Úspěch',
-        'Článek byl úspěšně vytvořen',
-        '#55d066',
-        '#226329'
-    );
+    StatusMessageService::create_success_popup('Článek byl úspěšně vytvořen');
 
     unset($_SESSION['article_draft_title']);
     unset($_SESSION['article_draft_content']);
     unset($_SESSION['article_draft_category']);
 
-    header('location: article.php?id=' . $article_id);
-    exit;
+    App::refresh();
 }
 
 $categories = CategoryRepository::get_categories();
 
 ?>
 
-<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <script src="scripts/animations.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 
     <script src="https://cdn.tiny.cloud/1/t1wch2d6qdr4qguzt2odfy24on1ilk20is1ux0uewe4vc3oy/tinymce/5/tinymce.min.js"
             referrerpolicy="origin"></script>
-
     <script>
         tinymce.init({
             selector: '#article-content'
@@ -127,11 +114,10 @@ $categories = CategoryRepository::get_categories();
 </head>
 <body>
 
-<?php include 'success_message.php'; ?>
-
-<header>
-    <?php include 'nav_bar.php' ?>
-</header>
+<?php
+include 'status_message.php';
+include 'nav_bar.php';
+?>
 
 <main<?= $_SESSION['current_location'] == $_SESSION['last_location'] || $error_message != null ? ' class="active"' : '' ?>>
     <h1>Přidat nový článek</h1>

@@ -4,17 +4,6 @@ include_once 'database/UserRepository.php';
 
 class AuthService
 {
-    public static function init()
-    {
-        if (session_status() != PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['logged_in'])) {
-            $_SESSION['logged_in'] = false;
-        }
-    }
-
     public static function check_password($username, $password): bool
     {
         $user = UserRepository::get_user_by_username($username);

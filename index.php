@@ -1,12 +1,11 @@
 <?php
 
+include_once 'App.php';
+App::init();
+
 include_once 'database/CategoryRepository.php';
 include_once 'database/ArticleRepository.php';
-include_once 'services/SuccessMessageService.php';
-include_once 'services/AuthService.php';
-AuthService::init();
-
-$category = null;
+include_once 'services/StatusMessageService.php';
 
 $last_params = $_SESSION['current_params'] ?? [];
 $current_params = $_GET;
@@ -14,20 +13,14 @@ $current_params = $_GET;
 $_SESSION['last_params'] = $last_params;
 $_SESSION['current_params'] = $current_params;
 
+$category = null;
+
 if (isset($_GET['category'])) {
     $category = CategoryRepository::get_category($_GET['category']);
 
     if ($category == null) {
-        SuccessMessageService::create_popup_message(
-            'fi-br-cross',
-            'Neplatná kategorie',
-            'Kategorie s ID ' . $_GET['category'] . ' nebyla nalezena!',
-            '#fa3f4c',
-            '#6e1421'
-        );
-
-        header('location: index.php');
-        exit;
+        StatusMessageService::create_error_popup('Kategorie s ID ' . $_GET['category'] . ' nebyla nalezena!');
+        App::refresh();
     }
 }
 
@@ -46,19 +39,16 @@ $articles = $category == null ? ArticleRepository::get_all_articles() : ArticleR
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <script src="scripts/animations.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 
     <title>Hlavní stránka | Zprávičky</title>
 </head>
 <body>
 
-<?php include 'success_message.php'; ?>
-
-<header>
-    <?php include 'nav_bar.php'; ?>
-</header>
+<?php
+include 'status_message.php';
+include 'nav_bar.php';
+?>
 
 <main<?= $_SESSION['current_location'] == $_SESSION['last_location'] ? ' class="active"' : '' ?>>
     <div style="display: flex; align-items: center; gap: 16px">
@@ -74,7 +64,10 @@ $articles = $category == null ? ArticleRepository::get_all_articles() : ArticleR
 
     <?php if (count($articles) == 0): ?>
         <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; pointer-events: none; user-select: none">
-            <img style="width: 10%; min-width: 200px;" src="images/no_data.svg" alt="No data">
+            <div style="width: 10%; min-width: 200px;">
+                <?= App::accent_color_svg('images/no_data.svg') ?>
+            </div>
+
             <h3><?= $category == null ? 'Nic zde není!' : "V této kategorii se nenachází žádný článek" ?></h3>
         </div>
     <?php else: ?>

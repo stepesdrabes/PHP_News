@@ -21,7 +21,7 @@ unset($_SESSION['from_user_info']);
 
 ?>
 
-<div id="navigation-bar">
+<header id="navigation-bar">
     <a href="index.php">
         <h1>Zprávičky</h1>
     </a>
@@ -79,7 +79,7 @@ unset($_SESSION['from_user_info']);
             </a>
         <?php endif; ?>
     </div>
-</div>
+</header>
 
 <script>
     window.addEventListener("load", () => {

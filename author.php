@@ -2,21 +2,17 @@
 
 use JetBrains\PhpStorm\NoReturn;
 
+include_once 'App.php';
+App::init();
+
 include_once 'database/UserRepository.php';
 include_once 'database/ArticleRepository.php';
 include_once 'database/CategoryRepository.php';
-include_once 'services/SuccessMessageService.php';
+include_once 'services/StatusMessageService.php';
 include_once 'services/AuthService.php';
-AuthService::init();
 
 if (empty($_GET['id'])) {
-    SuccessMessageService::create_popup_message(
-        'fi-br-cross',
-        'Prázdné ID',
-        'Nebylo zadáno žádné ID!',
-        '#fa3f4c',
-        '#6e1421'
-    );
+    StatusMessageService::create_error_popup('V požadavku nebylo zadáno ID autora!');
 
     header('location: index.php');
     exit;
@@ -35,13 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     global $author;
 
     if (!file_exists($_FILES['image']['tmp_name']) || !is_uploaded_file($_FILES['image']['tmp_name'])) {
-        SuccessMessageService::create_popup_message(
-            'fi-br-cross',
-            'Nevybraný obrázek',
-            'Nevybrali jste obrázek k nahrání',
-            '#fa3f4c',
-            '#6e1421'
-        );
+        StatusMessageService::create_error_popup('Nebyl vybrán žádný obrázek k nahrání!');
 
         header('location: author.php?id=' . $author['id']);
         exit;
@@ -59,86 +49,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $check = getimagesize($_FILES['image']['tmp_name']);
 
     if ($check === false) {
-        SuccessMessageService::create_popup_message(
-            'fi-br-cross',
-            'Neplatný soubor',
-            'Nahraný soubor není obrázek',
-            '#fa3f4c',
-            '#6e1421'
-        );
-
-        header('location: author.php?id=' . $author['id']);
-        exit;
+        StatusMessageService::create_error_popup('Nahraný soubor není obrázek!');
+        App::refresh();
     }
 
     if ($file_type != "jpg" && $file_type != "png" && $file_type != "jpeg" && $file_type != "gif") {
-        SuccessMessageService::create_popup_message(
-            'fi-br-cross',
-            'Neplatný formát',
-            'Podporované formáty jsou JPG, PNG a GIF',
-            '#fa3f4c',
-            '#6e1421'
-        );
-
-        header('location: author.php?id=' . $author['id']);
-        exit;
+        StatusMessageService::create_error_popup('Nepodporovaný formát! Podporované formáty jsou JPG, PNG a GIF');
+        App::refresh();
     }
 
     if (!move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-        SuccessMessageService::create_popup_message(
-            'fi-br-cross',
-            'Chyba',
-            'Nastala chyba při nahrávání souboru',
-            '#fa3f4c',
-            '#6e1421'
-        );
-
-        header('location: author.php?id=' . $author['id']);
-        exit;
+        StatusMessageService::create_error_popup('Nastala chyba při nahrávání souboru!');
+        App::refresh();
     }
 
     if (!UserRepository::change_user_profile_picture($author['id'], $target_file)) {
-        SuccessMessageService::create_popup_message(
-            'fi-br-cross',
-            'Chyba',
-            'Nastala chyba při nastavování profilového obrázku',
-            '#fa3f4c',
-            '#6e1421'
-        );
-
-        header('location: author.php?id=' . $author['id']);
-        exit;
+        StatusMessageService::create_error_popup('Nastala chyba při nastavování profilového obrázku!');
+        App::refresh();
     }
 
-    SuccessMessageService::create_popup_message(
-        'fi-br-check',
-        'Úspěch',
-        'Profilový obrázek byl změněn',
-        '#55d066',
-        '#226329'
-    );
+    StatusMessageService::create_success_popup('Profilový obrázek byl změněn');
 
-    header('location: author.php?id=' . $author['id']);
-    exit;
+    App::refresh();
 }
 
 if (isset($_GET['from_user_info'])) {
     $_SESSION['from_user_info'] = true;
-    header('location: author.php?id=' . $_GET['id']);
-    exit;
+    App::redirect("author.php?id={$_GET['id']}");
 }
 
 if ($author == null) {
-    SuccessMessageService::create_popup_message(
-        'fi-br-cross',
-        'Neplatný uživatel',
-        'Uživatel "' . $username . '" nebyl nalezen!',
-        '#fa3f4c',
-        '#6e1421'
-    );
-
-    header('location: index.php');
-    exit;
+    StatusMessageService::create_error_popup('Uživatel "' . $username . '" nebyl nalezen!');
+    App::redirect("location: author.php?id={$_GET['id']}");
 }
 
 $is_current_user = AuthService::is_logged_in() && AuthService::get_current_user() === $author;
@@ -154,8 +96,6 @@ $articles_count = count($articles);
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <script src="scripts/animations.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 
     <title>Hlavní stránka | Zprávičky</title>
@@ -175,7 +115,7 @@ $articles_count = count($articles);
 
             <label for="server-image-input" class="choose-picture" id="server-image-preview">
                 <i class="fi fi-br-camera"></i>
-                <p class="upload">Nahrát</p>
+                Nahrát
             </label>
 
             <input id="server-image-input" type="file" name="image" accept="image/*"/>
@@ -195,11 +135,10 @@ $articles_count = count($articles);
     </div>
 <?php endif; ?>
 
-<?php include 'success_message.php'; ?>
-
-<header>
-    <?php include 'nav_bar.php'; ?>
-</header>
+<?php
+include 'status_message.php';
+include 'nav_bar.php';
+?>
 
 <main<?= $_SESSION['current_location'] == $_SESSION['last_location'] ? ' class="active"' : '' ?>>
     <div style="display: flex; align-items: center; gap: 16px">
@@ -230,7 +169,6 @@ $articles_count = count($articles);
         <h2><?= $articles_count . ' ' . ($articles_count == 1 ? "článek" : ($articles_count < 5 && $articles_count != 0 ? 'články' : 'článků')) ?></h2>
 
         <?php if ($articles_count > 0): ?>
-
             <div class="line"></div>
 
             <?php foreach ($articles as $article):
@@ -269,7 +207,10 @@ $articles_count = count($articles);
             <?php endforeach; ?>
         <?php else: ?>
             <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; pointer-events: none; user-select: none">
-                <img style="width: 10%; min-width: 200px;" src="images/no_data.svg" alt="No data">
+                <div style="width: 10%; min-width: 200px;">
+                    <?= App::accent_color_svg('images/no_data.svg') ?>
+                </div>
+
                 <h3>Tento autor nenapsal žádný článek</h3>
             </div>
         <?php endif; ?>

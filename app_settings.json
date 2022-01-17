@@ -1,0 +1,6 @@
+{
+  "accentColor": "#845bff",
+  "showAdministrationInNavForNonAdmins": false,
+  "showNewArticleInNavBarForNonAuthors": true,
+  "newUserIsAuthor": true
+}

@@ -1,8 +1,9 @@
 <?php
 
+include_once 'App.php';
+App::init();
+
 include_once 'database/UserRepository.php';
-include_once 'services/AuthService.php';
-AuthService::init();
 
 $authors = UserRepository::get_users();
 
@@ -15,19 +16,16 @@ $authors = UserRepository::get_users();
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <script src="scripts/animations.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 
     <title>Autoři | Zprávičky</title>
 </head>
 <body>
 
-<?php include 'success_message.php'; ?>
-
-<header>
-    <?php include 'nav_bar.php' ?>
-</header>
+<?php
+include 'status_message.php';
+include 'nav_bar.php';
+?>
 
 <main<?= $_SESSION['current_location'] == $_SESSION['last_location'] ? ' class="active"' : '' ?>>
     <h1>Autoři</h1>
@@ -54,7 +52,10 @@ $authors = UserRepository::get_users();
         </div>
     <?php else: ?>
         <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; pointer-events: none; user-select: none">
-            <img style="width: 10%; min-width: 200px;" src="images/no_data.svg" alt="No data">
+            <div style="width: 10%; min-width: 200px;">
+                <?= App::accent_color_svg('images/no_data.svg') ?>
+            </div>
+
             <h3>Neexistuje žádný autor</h3>
         </div>
     <?php endif; ?>

@@ -1,38 +1,23 @@
 <?php
 
+include_once 'App.php';
+App::init();
+
 include_once 'database/ArticleRepository.php';
 include_once 'database/CategoryRepository.php';
-include_once 'services/SuccessMessageService.php';
-include_once 'services/AuthService.php';
-AuthService::init();
+include_once 'services/StatusMessageService.php';
 
 if (empty($_GET['id'])) {
-    SuccessMessageService::create_popup_message(
-        'fi-br-cross',
-        'Prázdné ID',
-        'Nebylo zadáno žádné ID!',
-        '#fa3f4c',
-        '#6e1421'
-    );
-
-    header('location: index.php');
-    exit;
+    StatusMessageService::create_error_popup('V požadavku nebylo zadáno žádné ID!');
+    App::redirect('index.php');
 }
 
 $article_id = $_GET['id'];
 $article = ArticleRepository::get_article($article_id);
 
 if ($article == null) {
-    SuccessMessageService::create_popup_message(
-        'fi-br-cross',
-        'Neplatný článek',
-        'Článek s ID "' . $article_id . '" nebyl nalezen!',
-        '#fa3f4c',
-        '#6e1421'
-    );
-
-    header('location: index.php');
-    exit;
+    StatusMessageService::create_error_popup('Článek s ID "' . $article_id . '" nebyl nalezen!');
+    App::redirect('index.php');
 }
 
 $category = CategoryRepository::get_category($article['category_id']);
@@ -48,19 +33,16 @@ $timestamp = date("d.m.Y", strtotime($article['timestamp']));
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <script src="scripts/animations.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 
     <title>Článek | Zprávičky</title>
 </head>
 <body>
 
-<?php include 'success_message.php'; ?>
-
-<header>
-    <?php include 'nav_bar.php'; ?>
-</header>
+<?php
+include 'status_message.php';
+include 'nav_bar.php';
+?>
 
 <main<?= $_SESSION['current_location'] == $_SESSION['last_location'] ? ' class="active"' : '' ?>>
     <div style="display: flex; align-items: center; gap: 16px">

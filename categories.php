@@ -1,9 +1,11 @@
 <?php
 
+include_once 'App.php';
+App::init();
+
 include_once 'database/CategoryRepository.php';
-include_once 'services/SuccessMessageService.php';
+include_once 'services/StatusMessageService.php';
 include_once 'services/AuthService.php';
-AuthService::init();
 
 $categories = CategoryRepository::get_categories();
 
@@ -30,20 +32,12 @@ function validate_values()
     }
 
     if (!CategoryRepository::create_category($category_name)) {
-        $create_category_error = 'Nastala chyba při vatváření kategorie';
+        $create_category_error = 'Nastala chyba při vytváření kategorie';
         return;
     }
 
-    SuccessMessageService::create_popup_message(
-        'fi-br-check',
-        'Úspěch',
-        'Kategorie "' . $category_name . '" byla úspěšně vytvořena!',
-        '#55d066',
-        '#226329'
-    );
-
-    header('location: categories.php');
-    exit;
+    StatusMessageService::create_success_popup('Kategorie "' . $category_name . '" byla úspěšně vytvořena');
+    App::refresh();
 }
 
 ?>
@@ -55,8 +49,6 @@ function validate_values()
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <script src="scripts/animations.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 
     <title>Kategorie | Zprávičky</title>
@@ -91,11 +83,10 @@ function validate_values()
     </div>
 <?php endif; ?>
 
-<?php include 'success_message.php'; ?>
-
-<header>
-    <?php include 'nav_bar.php' ?>
-</header>
+<?php
+include 'status_message.php';
+include 'nav_bar.php';
+?>
 
 <main<?= $_SESSION['current_location'] == $_SESSION['last_location'] ? ' class="active"' : '' ?>>
     <h1>Kategorie</h1>
@@ -112,7 +103,10 @@ function validate_values()
         </div>
     <?php else: ?>
         <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; pointer-events: none; user-select: none">
-            <img style="width: 10%; min-width: 200px;" src="images/no_data.svg" alt="No data">
+            <div style="width: 10%; min-width: 200px;">
+                <?= App::accent_color_svg('images/no_data.svg') ?>
+            </div>
+
             <h3>Neexistuje žádná kategorie</h3>
         </div>
     <?php endif; ?>

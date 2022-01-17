@@ -18,6 +18,18 @@ class UserRepository
 
     public static function change_user_profile_picture($user_id, $file_name): bool
     {
+        $current_user = self::get_user_by_id($user_id);
+
+        if ($current_user == null) {
+            return false;
+        }
+
+        $file_path = $current_user['file_name'];
+
+        if (file_exists($file_path)) {
+            unlink($file_path);
+        }
+
         $sql = "UPDATE users SET file_name=:file_name WHERE id=:id";
         $statement = DatabaseManager::get_instance()->prepare($sql);
         $statement->bindValue(":file_name", $file_name);

@@ -1,9 +1,11 @@
 <?php
 
+include_once 'App.php';
+App::init();
+
 include_once 'database/UserRepository.php';
-include_once 'services/SuccessMessageService.php';
+include_once 'services/StatusMessageService.php';
 include_once 'services/AuthService.php';
-AuthService::init();
 
 $error_message = null;
 
@@ -30,16 +32,8 @@ function validate_values()
 
     $user = AuthService::login($username);
 
-    SuccessMessageService::create_popup_message(
-        'fi-br-check',
-        'Úspěch',
-        'Přihlášení bylo úspěšné. Vítej zpět, ' . $user['username'] . '!',
-        '#55d066',
-        '#226329'
-    );
-
-    header('location: index.php');
-    exit;
+    StatusMessageService::create_success_popup('Přihlášení bylo úspěšné. Vítej zpět, ' . $user['username'] . '!');
+    App::redirect('index.php');
 }
 
 ?>
@@ -51,19 +45,16 @@ function validate_values()
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-    <script src="scripts/animations.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 
     <title>Přihlášení | Zprávičky</title>
 </head>
 <body>
 
-<?php include 'success_message.php'; ?>
-
-<header>
-    <?php include 'nav_bar.php' ?>
-</header>
+<?php
+include 'status_message.php';
+include 'nav_bar.php';
+?>
 
 <main<?= $_SESSION['current_location'] == $_SESSION['last_location'] ? ' class="active"' : '' ?>>
     <div class="auth-container">
@@ -76,11 +67,13 @@ function validate_values()
                 <p class="error-message"><?= $error_message ?></p>
             <?php endif; ?>
 
-            <button style="background-color: #7e32cd; color: #FFFFFF">Přihlásit se</button>
+            <button style="background-color: var(--highlight-color); color: #FFFFFF">Přihlásit se</button>
 
-            <p style="font-size: 0.8rem; width: 100%; text-align: center">Ještě nemáš účet? <a
-                        style="color: var(--highlight-color); text-decoration: underline; margin: 16px 0" href="register.php">Zaregistruj
-                    se!</a></p>
+            <p style="font-size: 0.8rem; width: 100%; text-align: center">
+                Ještě nemáš účet?
+                <a style="color: var(--highlight-color); text-decoration: underline; margin: 16px 0"
+                   href="register.php">Zaregistruj se!</a>
+            </p>
         </form>
     </div>
 </main>
