@@ -16,6 +16,16 @@ class UserRepository
         return $statement->execute();
     }
 
+    public static function change_user_profile_picture($user_id, $file_name): bool
+    {
+        $sql = "UPDATE users SET file_name=:file_name WHERE id=:id";
+        $statement = DatabaseManager::get_instance()->prepare($sql);
+        $statement->bindValue(":file_name", $file_name);
+        $statement->bindValue(":id", $user_id);
+
+        return $statement->execute();
+    }
+
     public static function get_user_by_id($id)
     {
         $sql = "SELECT * FROM users WHERE id=:id";

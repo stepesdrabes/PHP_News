@@ -46,7 +46,7 @@ unset($_SESSION['from_user_info']);
         <?php if (AuthService::is_logged_in()):
             $user = AuthService::get_current_user();
             $full_name = $user['firstname'] . ' ' . $user['surname'];
-            $img_src = $user['image'];
+            $img_src = $user['file_name'];
             ?>
 
             <h4><?= $full_name ?></h4>

@@ -105,6 +105,8 @@ $articles = $category == null ? ArticleRepository::get_all_articles() : ArticleR
                     <div style="display: flex; align-items: center; gap: 8px">
                         <p>Vytvořeno <?= $timestamp ?> autorem</p>
 
+                        <img class="profile-picture" src="<?= $author['file_name'] ?>" alt="">
+
                         <a href="author.php?id=<?= $author['id'] ?>">
                             <h4><?= $author['firstname'] . ' ' . $author['surname'] ?></h4>
                         </a>

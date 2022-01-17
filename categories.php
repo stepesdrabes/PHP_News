@@ -82,7 +82,7 @@ function validate_values()
 
             <div style="height: 100%"></div>
 
-            <div style="display: flex">
+            <div style="display: flex; width: 100%">
                 <button type="button" onclick="toggle_popup()">Zavřít</button>
                 <div style="width: 32px"></div>
                 <button>Vytvořit kategorii</button>

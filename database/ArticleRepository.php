@@ -22,7 +22,7 @@ class ArticleRepository
 
     public static function get_all_articles(): array
     {
-        $sql = "SELECT * FROM articles ORDER BY timestamp ASC";
+        $sql = "SELECT * FROM articles ORDER BY timestamp DESC";
         $statement = DatabaseManager::get_instance()->prepare($sql);
         $statement->execute();
         $rows = $statement->fetchAll();
@@ -36,7 +36,7 @@ class ArticleRepository
 
     public static function get_category_articles($category_id): array
     {
-        $sql = "SELECT * FROM articles WHERE category_id=:category_id ORDER BY timestamp ASC";
+        $sql = "SELECT * FROM articles WHERE category_id=:category_id ORDER BY timestamp DESC";
         $statement = DatabaseManager::get_instance()->prepare($sql);
         $statement->bindValue(":category_id", $category_id);
         $statement->execute();
@@ -51,7 +51,7 @@ class ArticleRepository
 
     public static function get_author_articles($user_id): array
     {
-        $sql = "SELECT * FROM articles WHERE user_id=:user_id ORDER BY timestamp ASC";
+        $sql = "SELECT * FROM articles WHERE user_id=:user_id ORDER BY timestamp DESC";
         $statement = DatabaseManager::get_instance()->prepare($sql);
         $statement->bindValue(":user_id", $user_id);
         $statement->execute();

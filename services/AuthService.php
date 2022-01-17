@@ -44,12 +44,7 @@ class AuthService
 
     public static function get_current_user()
     {
-        $user = UserRepository::get_user_by_id($_SESSION['id']);
-
-        $img = "https://www.jollysoft.cz/static/images/pavel-foltyn-jollysoft-profile.jpeg";
-        $user['image'] = $img;
-
-        return $user;
+        return UserRepository::get_user_by_id($_SESSION['id']);
     }
 
     public static function is_logged_in(): bool
