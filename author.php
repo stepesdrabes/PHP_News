@@ -34,7 +34,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 {
     global $author;
 
-    mkdir('uploads');
+    if (!file_exists($_FILES['image']['tmp_name']) || !is_uploaded_file($_FILES['image']['tmp_name'])) {
+        SuccessMessageService::create_popup_message(
+            'fi-br-cross',
+            'Nevybraný obrázek',
+            'Nevybrali jste obrázek k nahrání',
+            '#fa3f4c',
+            '#6e1421'
+        );
+
+        header('location: author.php?id=' . $author['id']);
+        exit;
+    }
+
+    if (!file_exists('uploads')) {
+        mkdir('uploads');
+    }
 
     $target_dir = 'uploads/';
     $guid = bin2hex(openssl_random_pseudo_bytes(16));
@@ -174,7 +189,7 @@ $articles_count = count($articles);
             <div style="display: flex; width: 100%">
                 <button type="button" onclick="toggle_popup()">Zavřít</button>
                 <div style="width: 32px"></div>
-                <button>Vytvořit kategorii</button>
+                <button>Nahrát obrázek</button>
             </div>
         </form>
     </div>

@@ -326,6 +326,7 @@ body {
       .profile-picture {
         width: 80px;
         height: 80px;
+        background-color: var(--input-bg);
       }
     }
   }
@@ -397,6 +398,7 @@ main {
         height: 100px;
         border-radius: 50%;
         object-fit: cover;
+        background-color: var(--input-bg);
       }
     }
   }
@@ -455,6 +457,7 @@ main {
       height: 256px;
       object-fit: cover;
       border-radius: 50%;
+      background-color: var(--input-bg);
     }
   }
 
@@ -487,6 +490,7 @@ main {
         height: 20px;
         border-radius: 50%;
         object-fit: cover;
+        background-color: var(--input-bg);
       }
     }
   }
@@ -501,9 +505,18 @@ main {
     width: 70%;
     align-self: center;
     justify-content: start;
+    align-items: start;
     display: flex;
     flex-direction: column;
     gap: 32px;
+
+    p {
+      margin: 0 !important;
+    }
+
+    .player {
+      aspect-ratio: 16/9;
+    }
 
     #article-content {
       width: 100%;
