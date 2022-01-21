@@ -43,7 +43,7 @@ $articles = $category == null ? ArticleRepository::get_all_articles() : ArticleR
 
     <title>Hlavní stránka | Zprávičky</title>
 </head>
-<body>
+<body class="<?= App::get_color_scheme() ?>">
 
 <?php
 include 'status_message.php';
@@ -65,7 +65,7 @@ include 'nav_bar.php';
     <?php if (count($articles) == 0): ?>
         <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; pointer-events: none; user-select: none">
             <div style="width: 10%; min-width: 200px;">
-                <?= App::accent_color_svg('images/no_data.svg') ?>
+                <?= App::accent_color_svg('images/no_data.svg', [ '#000000' => App::get_settings_value('accentColor')]) ?>
             </div>
 
             <h3><?= $category == null ? 'Nic zde není!' : "V této kategorii se nenachází žádný článek" ?></h3>
@@ -80,29 +80,33 @@ include 'nav_bar.php';
                 $full_name = $author['firstname'] . ' ' . $author['surname'];
                 $article_category = CategoryRepository::get_category($article['category_id']);
                 ?>
-                <div class="article">
-                    <div class="title-row">
-                        <a style="flex: 1" href="article.php?id=<?= $article['id'] ?>">
-                            <h1><?= $article['title'] ?></h1>
-                        </a>
+                <div class="article-row">
+                    <img src="<?= $article['image_path'] ?>" alt="image">
 
-                        <a href="index.php?category=<?= $article_category['id'] ?>">
-                            <div class="category-chip">
-                                <p><?= $article_category['name'] ?></p>
-                            </div>
-                        </a>
-                    </div>
+                    <div class="article">
+                        <div class="title-row">
+                            <a style="flex: 1" href="article.php?id=<?= $article['id'] ?>">
+                                <h1><?= $article['title'] ?></h1>
+                            </a>
 
-                    <p style="color: #535353; width: 75%"><?= substr(strip_tags($article['content']), 0, 256) . ' ...' ?></p>
+                            <a href="index.php?category=<?= $article_category['id'] ?>">
+                                <div class="category-chip">
+                                    <p><?= $article_category['name'] ?></p>
+                                </div>
+                            </a>
+                        </div>
 
-                    <div style="display: flex; align-items: center; gap: 8px">
-                        <p>Vytvořeno <?= $timestamp ?> autorem</p>
+                        <p style="color: var(--label); width: 75%"><?= substr(strip_tags($article['content']), 0, 256) . ' ...' ?></p>
 
-                        <img class="profile-picture" src="<?= $author['file_name'] ?>" alt="">
+                        <div style="display: flex; align-items: center; gap: 8px">
+                            <p>Vytvořeno <?= $timestamp ?> autorem</p>
 
-                        <a href="author.php?id=<?= $author['id'] ?>">
-                            <h4><?= $author['firstname'] . ' ' . $author['surname'] ?></h4>
-                        </a>
+                            <img class="profile-picture" src="<?= $author['file_name'] ?>" alt="">
+
+                            <a href="author.php?id=<?= $author['id'] ?>">
+                                <h4><?= $author['firstname'] . ' ' . $author['surname'] ?></h4>
+                            </a>
+                        </div>
                     </div>
                 </div>
 

@@ -8,6 +8,11 @@ $nav_categories = [
     'add_article.php' => 'Přidat článek',
 ];
 
+$login_only = [
+    'administration.php',
+    'add_article.php'
+];
+
 $last_location = $_SESSION['current_location'] ?? null;
 $current_location = basename($_SERVER["SCRIPT_FILENAME"], '.php') . '.php';
 
@@ -23,11 +28,13 @@ unset($_SESSION['from_user_info']);
 
 <header id="navigation-bar">
     <a href="index.php">
-        <h1>Zprávičky</h1>
+        <h1><?= App::get_settings_value('appName') ?></h1>
     </a>
 
     <nav>
         <?php foreach ($nav_categories as $file => $category_name): ?>
+            <?php if (in_array($file, $login_only) && !AuthService::is_logged_in()) continue; ?>
+
             <a id="<?= $file ?>"
                class="<?= ($current_location === $file && $same_location) || ($last_location === $file && !$same_location) ? 'selected' : '' ?><?= ($current_location === $file && !$same_location) ? ' new-select' : '' ?>"
                href="<?= $file ?>">
@@ -61,6 +68,16 @@ unset($_SESSION['from_user_info']);
                     <p class="username"><?= $user['username'] ?></p>
                 </div>
 
+                <div class="checkbox">
+                    <label class="switch">
+                        <input id="darkSwitchToggle"
+                               type="checkbox"<?= ($_SESSION['darkTheme'] ?? false) ? ' checked' : '' ?>>
+                        <span class="slider round"></span>
+                    </label>
+
+                    <label>Tmavý režim</label>
+                </div>
+
                 <a href="author.php?id=<?= $user['id'] ?>&from_user_info" style="width: 100%">
                     <button>Profil</button>
                 </a>
@@ -82,6 +99,19 @@ unset($_SESSION['from_user_info']);
 </header>
 
 <script>
+    document.getElementById("darkSwitchToggle").addEventListener("click", () => {
+        let checked = document.getElementById("darkSwitchToggle").checked;
+
+        const body = document.getElementsByTagName("body")[0];
+
+        if (body != null) {
+            body.classList.toggle("light-colors");
+            body.classList.toggle("dark-colors");
+        }
+
+        fetch('http://localhost/zpravicky/toggle_dark_mode.php');
+    });
+
     window.addEventListener("load", () => {
         <?php if (!$same_location): ?>
         let newLocation = document.getElementById("<?= $current_location ?>");

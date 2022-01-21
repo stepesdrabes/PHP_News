@@ -20,7 +20,7 @@ $authors = UserRepository::get_users();
 
     <title>Autoři | Zprávičky</title>
 </head>
-<body>
+<body class="<?= App::get_color_scheme() ?>">
 
 <?php
 include 'status_message.php';
@@ -53,7 +53,7 @@ include 'nav_bar.php';
     <?php else: ?>
         <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; pointer-events: none; user-select: none">
             <div style="width: 10%; min-width: 200px;">
-                <?= App::accent_color_svg('images/no_data.svg') ?>
+                <?= App::accent_color_svg('images/no_data.svg', [ '#000000' => App::get_settings_value('accentColor')]) ?>
             </div>
 
             <h3>Neexistuje žádný autor</h3>

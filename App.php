@@ -6,10 +6,13 @@ include_once 'services/AuthService.php';
 
 class App
 {
-    private static string $accent_color = '#58c931';
+    private static array $settings = [];
 
     public static function init()
     {
+        $json = file_get_contents('app_settings.json');
+        self::$settings = json_decode($json, true);
+
         if (session_status() != PHP_SESSION_ACTIVE) {
             session_start();
         }
@@ -26,7 +29,7 @@ class App
         ?>
 
         <script>
-            document.querySelector(':root').style.setProperty('--highlight-color', '<?= self::$accent_color ?>');
+            document.querySelector(':root').style.setProperty('--highlight-color', '<?= self::$settings['accentColor'] ?>');
 
             window.addEventListener("load", () => {
                 animate_main();
@@ -44,9 +47,39 @@ class App
         <?php
     }
 
-    public static function accent_color_svg($file_path): string
+    public static function accent_color_svg($file_path, $color_map): string
     {
-        return str_replace('#000000', self::$accent_color, file_get_contents($file_path));
+        $svg = file_get_contents($file_path);
+
+        foreach ($color_map as $color => $new_color) {
+            $svg = str_replace($color, $new_color, $svg);
+        }
+
+        return $svg;
+    }
+
+    public static function get_settings_value($key): mixed
+    {
+        return self::$settings[$key];
+    }
+
+    public static function save_settings_value($key, $value)
+    {
+        self::$settings[$key] = $value;
+        $json = json_encode(self::$settings, JSON_PRETTY_PRINT);
+        file_put_contents('app_settings.json', $json);
+    }
+
+    public static function get_color_scheme(): string
+    {
+        $dark = $_SESSION['darkTheme'] ?? false;
+        return $dark ? 'dark-colors' : 'light-colors';
+    }
+
+    public static function toggle_color_scheme()
+    {
+        $dark = $_SESSION['darkTheme'] ?? false;
+        $_SESSION['darkTheme'] = !$dark;
     }
 
     #[NoReturn] public static function refresh()

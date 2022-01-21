@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 17, 2022 at 11:03 AM
+-- Generation Time: Jan 21, 2022 at 11:31 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.1
 
@@ -34,6 +34,7 @@ CREATE TABLE `articles` (
                             `user_id` int(10) UNSIGNED NOT NULL,
                             `category_id` int(10) UNSIGNED NOT NULL,
                             `title` text COLLATE utf8_czech_ci NOT NULL,
+                            `image_path` text COLLATE utf8_czech_ci NOT NULL DEFAULT 'https://obaly-optimalizace.cz/wp-content/uploads/2021/02/default-placeholder-image.png',
                             `content` text COLLATE utf8_czech_ci NOT NULL,
                             `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
@@ -62,6 +63,7 @@ CREATE TABLE `users` (
                          `firstname` varchar(32) COLLATE utf8_czech_ci NOT NULL,
                          `surname` varchar(32) COLLATE utf8_czech_ci NOT NULL,
                          `file_name` text COLLATE utf8_czech_ci DEFAULT 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/271deea8-e28c-41a3-aaf5-2913f5f48be6/de7834s-6515bd40-8b2c-4dc6-a843-5ac1a95a8b55.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI3MWRlZWE4LWUyOGMtNDFhMy1hYWY1LTI5MTNmNWY0OGJlNlwvZGU3ODM0cy02NTE1YmQ0MC04YjJjLTRkYzYtYTg0My01YWMxYTk1YThiNTUuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.BopkDn1ptIwbmcKHdAOlYHyAOOACXW0Zfgbs0-6BY-E',
+                         `is_admin` tinyint(1) NOT NULL,
                          `password_hash` text COLLATE utf8_czech_ci NOT NULL,
                          `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;

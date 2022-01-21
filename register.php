@@ -79,7 +79,7 @@ function validate_values()
 
     <title>Registrace | Zprávičky</title>
 </head>
-<body>
+<body class="<?= App::get_color_scheme() ?>">
 
 <?php
 include 'status_message.php';

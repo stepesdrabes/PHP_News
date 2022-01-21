@@ -3,8 +3,21 @@
 
 :root {
   --highlight-color: #000000;
-  --input-bg: #EAEEEE;
   --error-color: #fa4040;
+}
+
+.light-colors {
+  --input-bg: #EAEEEE;
+  --background-color: #FFFFFF;
+  --text-color: #14142B;
+  --label: #6E7191;
+}
+
+.dark-colors {
+  --input-bg: #4E4B66;
+  --background-color: #14142B;
+  --text-color: #FCFCFC;
+  --label: #A0A3BD;
 }
 
 #popup-background {
@@ -31,7 +44,7 @@
   #popup-window {
     width: 400px;
     height: 500px;
-    background-color: #FFFFFF;
+    background-color: var(--background-color);
     border-radius: 8px;
     padding: 20px;
     transform: translateY(-25px);
@@ -44,6 +57,10 @@
     &.active {
       transition: transform 0.3s;
       transform: translateY(0);
+    }
+
+    button {
+      width: 100%;
     }
 
     h1 {
@@ -98,7 +115,7 @@
   color: #226329;
   z-index: 50;
   transform: translate(-50%, 0);
-  box-shadow: rgba(50, 50, 93, 0.25) 0 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   display: flex;
   gap: 32px;
   align-items: center;
@@ -126,6 +143,12 @@
   font-family: 'Readex Pro', sans-serif;
 }
 
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -142,7 +165,6 @@ div > svg {
 }
 
 button {
-  width: 100%;
   height: 42px;
   outline: none;
   border: none;
@@ -151,9 +173,9 @@ button {
   padding: 0 16px;
   font-weight: 600;
   background-color: var(--input-bg);
-  transition: transform 0.2s;
+  transition: transform 0.2s, background-color 0.3s;
   text-wrap: avoid;
-
+  color: var(--text-color);
 
   &:hover {
     transform: translateY(-2px);
@@ -168,7 +190,13 @@ button {
   border: none;
   border-radius: 6px;
   padding: 0 8px;
+  color: var(--text-color);
   background-color: var(--input-bg);
+  transition: background-color 0.3s;
+
+  &::placeholder {
+    color: var(--label);
+  }
 }
 
 .column {
@@ -180,6 +208,15 @@ button {
 body {
   margin-top: 70px;
   padding-bottom: 70px;
+}
+
+.profile-picture-small {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--input-bg);
+  z-index: 10;
 }
 
 #navigation-bar {
@@ -194,13 +231,13 @@ body {
   gap: 16px;
   align-items: center;
   padding: 0 16px;
-  background-color: #FFFFFF;
-  box-shadow: rgba(99, 99, 99, 0.0) 0 2px 8px 0;
-  transition: height 0.3s, box-shadow 0.3s;
+  background-color: var(--background-color);
+  box-shadow: rgba(0, 0, 0, 0.0) 0 2px 8px 0;
+  transition: height 0.3s, box-shadow 0.3s, background-color 0.3s;
 
   &.smaller {
     height: 60px;
-    box-shadow: rgba(99, 99, 99, 0.1) 0 2px 8px 0;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 2px 8px 0;
   }
 
   h1 {
@@ -311,22 +348,25 @@ body {
       position: absolute;
       padding: 16px;
       border-radius: 6px;
-      box-shadow: rgba(100, 100, 111, 0.12) 0px 6px 6px 0px;
-      background-color: #FFFFFF;
+      box-shadow: rgba(0, 0, 0, 0.2) 0 8px 8px 0;
+      background-color: var(--background-color);
       opacity: 0.0;
       transform: translateY(-20px);
       z-index: 1;
       align-items: center;
+      flex-direction: column;
+      gap: 16px;
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s, background-color 0.3s;
+
+      button {
+        width: 100%;
+      }
 
       &.active {
         visibility: visible;
         opacity: 1.0;
         transform: translateY(0);
       }
-
-      flex-direction: column;
-      gap: 16px;
-      transition: 0.3s;
 
       .profile-picture {
         width: 80px;
@@ -371,6 +411,69 @@ main {
     }
   }
 
+  @mixin tools-animation {
+    &:hover {
+      .tools {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  .tools {
+    width: 100%;
+    height: 60px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(-30px);
+    transition: transform 0.3s, opacity 0.3s, visibility 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 8px;
+    padding: 0 8px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+
+    .tool-button {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+      border-radius: 50%;
+      position: relative;
+
+      &:hover {
+        background-color: var(--input-bg);
+
+        .tool-description {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
+      .tool-description {
+        transform: translate(-50%, -50px);
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+        text-wrap: none;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        z-index: 50;
+        overflow: visible;
+        font-weight: 600;
+      }
+    }
+  }
+
   #authors {
     width: 70%;
     display: grid;
@@ -379,23 +482,25 @@ main {
     grid-template-columns: 1fr 1fr 1fr 1fr;
 
     .author {
+      @include tools-animation;
       width: 100%;
       height: auto;
       padding: 35px 10px;
       text-align: center;
       transition: 0.3s;
       border-radius: 8px;
-      box-shadow: rgba(99, 99, 99, 0.1) 0 2px 8px 0;
+      box-shadow: rgba(0, 0, 0, 0.1) 0 2px 8px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 16px;
       cursor: pointer;
+      position: relative;
 
       &:hover {
         transform: translateY(-3px);
-        box-shadow: rgba(99, 99, 99, 0.2) 0 4px 10px 0;
+        box-shadow: rgba(0, 0, 0, 0.2) 0 4px 10px 0;
       }
 
       .profile-picture {
@@ -418,7 +523,7 @@ main {
 
   .category-chip {
     display: flex;
-    background-color: #EFEFEF;
+    background-color: var(--input-bg);
     height: 32px;
     align-items: center;
     flex-wrap: wrap;
@@ -431,7 +536,7 @@ main {
     transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
 
     &:hover {
-      background-color: #d2d1d1;
+      background-color: var(--input-bg);
       transform: translateY(-3px);
       box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px 0;
     }
@@ -444,6 +549,41 @@ main {
     gap: 16px;
     margin-top: 16px;
     align-self: center;
+
+    #uploaded-image-input {
+      display: none;
+    }
+
+    #uploaded-image-preview {
+      @include tools-animation;
+    }
+
+    .choose-image-box {
+      @include tools-animation;
+      aspect-ratio: 16/9;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .choose-article-picture {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--input-bg);
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+    }
 
     .error-message {
       color: var(--error-color);
@@ -473,11 +613,27 @@ main {
     flex-direction: column;
     gap: 32px;
 
+    .article-row {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+
+      img {
+        aspect-ratio: 16 / 10;
+        height: 150px;
+        object-fit: cover;
+        overflow: hidden;
+        border-radius: 8px;
+      }
+    }
+
     .article {
       width: 100%;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      flex: 1;
 
       .title-row {
         display: flex;
@@ -507,13 +663,20 @@ main {
   }
 
   #article-box {
-    width: 70%;
+    width: 50%;
     align-self: center;
     justify-content: start;
     align-items: start;
     display: flex;
     flex-direction: column;
     gap: 32px;
+
+    .title-image {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      object-fit: cover;
+    }
 
     p {
       margin: 0 !important;
@@ -530,9 +693,129 @@ main {
       gap: 16px;
     }
   }
+
+  #settings-box {
+    width: 70%;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 32px;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+
+      label {
+        width: 100%;
+      }
+
+      .checkboxes {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+  }
 }
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: start;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--input-bg);
+  -webkit-transition: .4s;
+  transition: .4s;
+  width: 60px;
+  height: 34px;
+
+  &:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--background-color);
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  &.round {
+    border-radius: 34px;
+
+    &:before {
+      border-radius: 50%;
+    }
+  }
+}
+
+input:checked + .slider {
+  background-color: var(--highlight-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--highlight-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+  width: 60px;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  &::-webkit-color-swatch {
+    border: none;
+  }
+}
+
 
 .tox-tinymce {
   border-radius: 8px !important;
   min-height: 80vh !important;
+}
+
+#article-content * {
+  color: var(--text-color) !important;
+}
+
+#article-content a {
+  color: var(--highlight-color) !important;
+  text-decoration-color: var(--highlight-color) !important;
+  text-decoration: underline !important;
 }

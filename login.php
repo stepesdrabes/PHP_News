@@ -49,7 +49,7 @@ function validate_values()
 
     <title>Přihlášení | Zprávičky</title>
 </head>
-<body>
+<body class="<?= App::get_color_scheme() ?>">
 
 <?php
 include 'status_message.php';

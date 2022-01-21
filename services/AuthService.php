@@ -25,6 +25,16 @@ class AuthService
         return $user;
     }
 
+    public static function is_admin(): bool {
+        $user = self::get_current_user();
+
+        if($user == null) {
+            return false;
+        }
+
+        return $user['is_admin'];
+    }
+
     public static function logout()
     {
         unset($_SESSION['id']);

@@ -2,8 +2,21 @@
 @import "uicons-bold-rounded.css";
 :root {
   --highlight-color: #000000;
-  --input-bg: #EAEEEE;
   --error-color: #fa4040;
+}
+
+.light-colors {
+  --input-bg: #EAEEEE;
+  --background-color: #FFFFFF;
+  --text-color: #14142B;
+  --label: #6E7191;
+}
+
+.dark-colors {
+  --input-bg: #4E4B66;
+  --background-color: #14142B;
+  --text-color: #FCFCFC;
+  --label: #A0A3BD;
 }
 
 #popup-background {
@@ -29,7 +42,7 @@
 #popup-background #popup-window {
   width: 400px;
   height: 500px;
-  background-color: #FFFFFF;
+  background-color: var(--background-color);
   border-radius: 8px;
   padding: 20px;
   transform: translateY(-25px);
@@ -42,6 +55,9 @@
 #popup-background #popup-window.active {
   transition: transform 0.3s;
   transform: translateY(0);
+}
+#popup-background #popup-window button {
+  width: 100%;
 }
 #popup-background #popup-window h1 {
   font-size: 1.2rem;
@@ -87,7 +103,7 @@
   color: #226329;
   z-index: 50;
   transform: translate(-50%, 0);
-  box-shadow: rgba(50, 50, 93, 0.25) 0 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   display: flex;
   gap: 32px;
   align-items: center;
@@ -109,6 +125,12 @@
   font-family: "Readex Pro", sans-serif;
 }
 
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -125,7 +147,6 @@ div > svg {
 }
 
 button {
-  width: 100%;
   height: 42px;
   outline: none;
   border: none;
@@ -134,8 +155,9 @@ button {
   padding: 0 16px;
   font-weight: 600;
   background-color: var(--input-bg);
-  transition: transform 0.2s;
+  transition: transform 0.2s, background-color 0.3s;
   text-wrap: avoid;
+  color: var(--text-color);
 }
 button:hover {
   transform: translateY(-2px);
@@ -149,7 +171,12 @@ button:hover {
   border: none;
   border-radius: 6px;
   padding: 0 8px;
+  color: var(--text-color);
   background-color: var(--input-bg);
+  transition: background-color 0.3s;
+}
+.input-field::placeholder {
+  color: var(--label);
 }
 
 .column {
@@ -161,6 +188,15 @@ button:hover {
 body {
   margin-top: 70px;
   padding-bottom: 70px;
+}
+
+.profile-picture-small {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--input-bg);
+  z-index: 10;
 }
 
 #navigation-bar {
@@ -175,13 +211,13 @@ body {
   gap: 16px;
   align-items: center;
   padding: 0 16px;
-  background-color: #FFFFFF;
-  box-shadow: rgba(99, 99, 99, 0) 0 2px 8px 0;
-  transition: height 0.3s, box-shadow 0.3s;
+  background-color: var(--background-color);
+  box-shadow: rgba(0, 0, 0, 0) 0 2px 8px 0;
+  transition: height 0.3s, box-shadow 0.3s, background-color 0.3s;
 }
 #navigation-bar.smaller {
   height: 60px;
-  box-shadow: rgba(99, 99, 99, 0.1) 0 2px 8px 0;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 8px 0;
 }
 #navigation-bar h1 {
   font-size: 1.25rem;
@@ -271,15 +307,18 @@ body {
   position: absolute;
   padding: 16px;
   border-radius: 6px;
-  box-shadow: rgba(100, 100, 111, 0.12) 0px 6px 6px 0px;
-  background-color: #FFFFFF;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 8px 8px 0;
+  background-color: var(--background-color);
   opacity: 0;
   transform: translateY(-20px);
   z-index: 1;
   align-items: center;
   flex-direction: column;
   gap: 16px;
-  transition: 0.3s;
+  transition: opacity 0.3s, transform 0.3s, visibility 0.3s, background-color 0.3s;
+}
+#navigation-bar #auth-info #user-popup button {
+  width: 100%;
 }
 #navigation-bar #auth-info #user-popup.active {
   visibility: visible;
@@ -322,6 +361,54 @@ main .auth-container form {
 main .auth-container .error-message {
   color: var(--error-color);
 }
+main .tools {
+  width: 100%;
+  height: 60px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-30px);
+  transition: transform 0.3s, opacity 0.3s, visibility 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 8px;
+  padding: 0 8px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+}
+main .tools .tool-button {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  border-radius: 50%;
+  position: relative;
+}
+main .tools .tool-button:hover {
+  background-color: var(--input-bg);
+}
+main .tools .tool-button:hover .tool-description {
+  opacity: 1;
+  visibility: visible;
+}
+main .tools .tool-button .tool-description {
+  transform: translate(-50%, -50px);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  text-wrap: none;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 50;
+  overflow: visible;
+  font-weight: 600;
+}
 main #authors {
   width: 70%;
   display: grid;
@@ -336,17 +423,23 @@ main #authors .author {
   text-align: center;
   transition: 0.3s;
   border-radius: 8px;
-  box-shadow: rgba(99, 99, 99, 0.1) 0 2px 8px 0;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 8px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 16px;
   cursor: pointer;
+  position: relative;
+}
+main #authors .author:hover .tools {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
 }
 main #authors .author:hover {
   transform: translateY(-3px);
-  box-shadow: rgba(99, 99, 99, 0.2) 0 4px 10px 0;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 4px 10px 0;
 }
 main #authors .author .profile-picture {
   width: 100px;
@@ -364,7 +457,7 @@ main #categories {
 }
 main .category-chip {
   display: flex;
-  background-color: #EFEFEF;
+  background-color: var(--input-bg);
   height: 32px;
   align-items: center;
   flex-wrap: wrap;
@@ -376,7 +469,7 @@ main .category-chip {
   transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 main .category-chip:hover {
-  background-color: #d2d1d1;
+  background-color: var(--input-bg);
   transform: translateY(-3px);
   box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px 0;
 }
@@ -387,6 +480,43 @@ main #add-article-form {
   gap: 16px;
   margin-top: 16px;
   align-self: center;
+}
+main #add-article-form #uploaded-image-input {
+  display: none;
+}
+main #add-article-form #uploaded-image-preview:hover .tools {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+main #add-article-form .choose-image-box {
+  aspect-ratio: 16/9;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+main #add-article-form .choose-image-box:hover .tools {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+main #add-article-form .choose-article-picture {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--input-bg);
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
 }
 main #add-article-form .error-message {
   color: var(--error-color);
@@ -412,11 +542,25 @@ main #articles {
   flex-direction: column;
   gap: 32px;
 }
+main #articles .article-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+main #articles .article-row img {
+  aspect-ratio: 16/10;
+  height: 150px;
+  object-fit: cover;
+  overflow: hidden;
+  border-radius: 8px;
+}
 main #articles .article {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1;
 }
 main #articles .article .title-row {
   display: flex;
@@ -440,13 +584,19 @@ main .line {
   background-color: var(--input-bg);
 }
 main #article-box {
-  width: 70%;
+  width: 50%;
   align-self: center;
   justify-content: start;
   align-items: start;
   display: flex;
   flex-direction: column;
   gap: 32px;
+}
+main #article-box .title-image {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 8px;
+  object-fit: cover;
 }
 main #article-box p {
   margin: 0 !important;
@@ -460,10 +610,119 @@ main #article-box #article-content {
   flex-direction: column;
   gap: 16px;
 }
+main #settings-box {
+  width: 70%;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  gap: 32px;
+}
+main #settings-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+main #settings-box form label {
+  width: 100%;
+}
+main #settings-box form .checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: start;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--input-bg);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  width: 60px;
+  height: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--background-color);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--highlight-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--highlight-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+input[type=color] {
+  -webkit-appearance: none;
+  border: none;
+  width: 60px;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+}
+input[type=color]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type=color]::-webkit-color-swatch {
+  border: none;
+}
 
 .tox-tinymce {
   border-radius: 8px !important;
   min-height: 80vh !important;
+}
+
+#article-content * {
+  color: var(--text-color) !important;
+}
+
+#article-content a {
+  color: var(--highlight-color) !important;
+  text-decoration-color: var(--highlight-color) !important;
+  text-decoration: underline !important;
 }
 
 /*# sourceMappingURL=style.css.map */

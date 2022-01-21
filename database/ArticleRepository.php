@@ -4,13 +4,14 @@ include_once 'DatabaseManager.php';
 
 class ArticleRepository
 {
-    public static function create_article($user_id, $category_id, $title, $content): ?int
+    public static function create_article($user_id, $category_id, $title, $image_path, $content): ?int
     {
-        $sql = "INSERT INTO articles (user_id, category_id, title, content) VALUES (:user_id, :category_id, :title, :content)";
+        $sql = "INSERT INTO articles (user_id, category_id, title, image_path, content) VALUES (:user_id, :category_id, :title, :image_path, :content)";
         $statement = DatabaseManager::get_instance()->prepare($sql);
         $statement->bindValue(":user_id", $user_id);
         $statement->bindValue(":category_id", $category_id);
         $statement->bindValue(":title", $title);
+        $statement->bindValue(":image_path", $image_path);
         $statement->bindValue(":content", $content);
 
         if ($statement->execute() === false) {

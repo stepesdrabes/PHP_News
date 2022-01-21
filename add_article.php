@@ -74,7 +74,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         return;
     }
 
-    $article_id = ArticleRepository::create_article($user_id, $category, $article_title, $content);
+    if (!file_exists($_FILES['image']['tmp_name']) || !is_uploaded_file($_FILES['image']['tmp_name'])) {
+        StatusMessageService::create_error_popup('Nebyl vybrán žádný obrázek k nahrání!');
+        App::refresh();
+    }
+
+    if (!file_exists('uploads')) {
+        mkdir('uploads');
+    }
+
+    $target_dir = 'uploads/';
+    $guid = bin2hex(openssl_random_pseudo_bytes(16));
+    $target_file = $target_dir . $guid . basename($_FILES['image']['name']);
+    $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+    $check = getimagesize($_FILES['image']['tmp_name']);
+
+    if ($check === false) {
+        StatusMessageService::create_error_popup('Nahraný soubor není obrázek!');
+        App::refresh();
+    }
+
+    if ($file_type != "jpg" && $file_type != "png" && $file_type != "jpeg" && $file_type != "gif") {
+        StatusMessageService::create_error_popup('Nepodporovaný formát! Podporované formáty jsou JPG, PNG a GIF');
+        App::refresh();
+    }
+
+    if (!move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
+        StatusMessageService::create_error_popup('Nastala chyba při nahrávání souboru!');
+        App::refresh();
+    }
+
+    $article_id = ArticleRepository::create_article($user_id, $category, $article_title, $target_file, $content);
 
     if ($article_id == null) {
         $error_message = "Nastala chyba při vytváření článku";
@@ -112,7 +143,7 @@ $categories = CategoryRepository::get_categories();
 
     <title>Přidat článek | Zprávičky</title>
 </head>
-<body>
+<body class="<?= App::get_color_scheme() ?>">
 
 <?php
 include 'status_message.php';
@@ -127,7 +158,15 @@ include 'nav_bar.php';
             <a style="color: var(--highlight-color); text-decoration: underline" href="login.php">přihlášení!</a>
         </p>
     <?php else: ?>
-        <form id="add-article-form" method="post">
+        <form id="add-article-form" method="post" enctype="multipart/form-data">
+            <div class="choose-image-box" id="choose-image-box">
+                <label for="uploaded-image-input" class="choose-article-picture" id="uploaded-image-preview">
+                    <i class="fi fi-br-camera"></i>
+                    Vyberte kliknutím obrázek článku
+                </label>
+            </div>
+            <input id="uploaded-image-input" type="file" name="image" accept="image/*"/>
+
             <input type="text" class="input-field" name="title"
                    placeholder="Nadpis článku"<?= $article_title != null ? ' value="' . $article_title . '"' : '' ?>>
 
@@ -154,5 +193,56 @@ include 'nav_bar.php';
 </main>
 
 </body>
+
+<script>
+    document.getElementById("uploaded-image-input").addEventListener("change", () => previewSelectedImage());
+
+    function previewSelectedImage() {
+        const chooseFile = document.getElementById("uploaded-image-input");
+        const imageBox = document.getElementById("choose-image-box");
+
+        const files = chooseFile.files[0];
+        if (files) {
+            const fileReader = new FileReader();
+
+            fileReader.readAsDataURL(files);
+            fileReader.addEventListener("load", function () {
+                imageBox.innerHTML = `
+                    <label for="uploaded-image-input" class="choose-article-picture" id="uploaded-image-preview">
+                        <i class="fi fi-br-camera"></i>
+                        Vyberte kliknutím obrázek článku
+                    </label>
+
+                    <div class="tools">
+                        <div class="tool-button" id="trash-button">
+                            <i class="fi fi-br-trash"></i>
+                        </div>
+                    </div>`;
+
+                const imagePreview = document.getElementById("uploaded-image-preview");
+
+                imagePreview.style.backgroundImage = 'url("' + this.result + '")';
+                imagePreview.innerHTML = "";
+
+                document.getElementById("trash-button").addEventListener("click", () => removeImage());
+            });
+        }
+    }
+
+    function removeImage() {
+        const chooseFile = document.getElementById("uploaded-image-input");
+        const imagePreview = document.getElementById("uploaded-image-preview");
+        const imageBox = document.getElementById("choose-image-box");
+
+        chooseFile.value = "";
+        imagePreview.style.backgroundImage = "";
+
+        imageBox.innerHTML = `
+            <label for="uploaded-image-input" class="choose-article-picture" id="uploaded-image-preview">
+                <i class="fi fi-br-camera"></i>
+                Vyberte kliknutím obrázek článku
+            </label>`;
+    }
+</script>
 
 </html>

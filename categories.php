@@ -53,35 +53,7 @@ function validate_values()
 
     <title>Kategorie | Zprávičky</title>
 </head>
-<body>
-
-<?php if (AuthService::is_logged_in()): ?>
-    <div id="popup-background" class="<?= $create_category_error == null ? '' : 'active' ?>">
-        <form id="popup-window" method="post" autocomplete="off">
-            <div class="title-row"
-                 style="width: 100%; display: flex; justify-content: space-between; align-items: center">
-                <h1>Přidat kategorii</h1>
-                <i class="fi fi-br-cross-circle" id="close-popup" onclick="toggle_popup()"></i>
-            </div>
-
-            <div style="height: 16px"></div>
-
-            <input class="input-field" type="text" name="category-name" placeholder="Název kategorie...">
-
-            <?php if ($create_category_error != null): ?>
-                <p class="error-message"><?= $create_category_error ?></p>
-            <?php endif; ?>
-
-            <div style="height: 100%"></div>
-
-            <div style="display: flex; width: 100%">
-                <button type="button" onclick="toggle_popup()">Zavřít</button>
-                <div style="width: 32px"></div>
-                <button>Vytvořit kategorii</button>
-            </div>
-        </form>
-    </div>
-<?php endif; ?>
+<body class="<?= App::get_color_scheme() ?>">
 
 <?php
 include 'status_message.php';
@@ -104,30 +76,14 @@ include 'nav_bar.php';
     <?php else: ?>
         <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px; pointer-events: none; user-select: none">
             <div style="width: 10%; min-width: 200px;">
-                <?= App::accent_color_svg('images/no_data.svg') ?>
+                <?= App::accent_color_svg('images/no_data.svg', ['#000000' => App::get_settings_value('accentColor')]) ?>
             </div>
 
             <h3>Neexistuje žádná kategorie</h3>
         </div>
     <?php endif; ?>
-
-    <?php if (AuthService::is_logged_in()): ?>
-        <button style="width: 150px" onclick="toggle_popup()">Přidat kategorii</button>
-    <?php endif; ?>
 </main>
 
 </body>
-
-<?php if (AuthService::is_logged_in()): ?>
-    <script>
-        const popupWindow = document.getElementById("popup-window");
-        const popup = document.getElementById("popup-background");
-
-        function toggle_popup() {
-            popupWindow.classList.toggle("active");
-            popup.classList.toggle("active");
-        }
-    </script>
-<?php endif; ?>
 
 </html>

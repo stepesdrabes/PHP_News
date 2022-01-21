@@ -37,7 +37,7 @@ $timestamp = date("d.m.Y", strtotime($article['timestamp']));
 
     <title>Článek | Zprávičky</title>
 </head>
-<body>
+<body class="<?= App::get_color_scheme() ?>">
 
 <?php
 include 'status_message.php';
@@ -59,6 +59,8 @@ include 'nav_bar.php';
     </div>
 
     <div id="article-box">
+        <img class="title-image" alt="image" src="<?= $article['image_path'] ?>">
+
         <h1><?= $article['title'] ?></h1>
 
         <div class="line"></div>
@@ -71,6 +73,8 @@ include 'nav_bar.php';
 
         <div style="display: flex; align-items: center; gap: 8px">
             <p>Vytvořeno <?= $timestamp ?> autorem</p>
+
+            <img class="profile-picture-small" src="<?= $author['file_name'] ?>" alt="">
 
             <a href="author.php?id=<?= $author['id'] ?>">
                 <h4><?= $author['firstname'] . ' ' . $author['surname'] ?></h4>
